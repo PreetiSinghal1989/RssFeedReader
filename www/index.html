@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.js"></script>
+</head>
+
+
+<body ng-app="ionicApp" ng-cloak>
+    <ion-pane>
+        <ion-header-bar class="bar bar-header bar-calm bar-stable">
+            <h1 class="title">Daily Utah Chronicle</h1>
+        </ion-header-bar>
+
+
+        <ion-tabs class="tabs-icon-top tabs-color-active-positive">
+
+            <!-- Sports Tab -->
+            <ion-tab title="Sports" icon-off="ion-ios-baseball-outline" icon-on="ion-ios-baseball" href="#/tab/sports">
+                <ion-content ng-controller="FeedController" ng-init="init()" class='has-header' ng-class="{'has-tabs-top': platform.isAndroid()}">
+                    <ion-refresher on-refresh="refreshFeed()"></ion-refresher>
+                    <label class="item item-input">
+                      <i class="icon ion-search placeholder-icon"></i>
+                      <input ng-model="query" type="search" placeholder="Filter by" autofocus>
+                    </label>
+
+                    <ion-list>
+                        <div ng-repeat="entry in entries | filter : query ">
+                            <div class='card'>
+                                <ion-item ng-click="toggleRss(entry)" ng-class="{active: isEntryShown(entry)}" class="item item-text-wrap">
+                                    <i class="icon" ng-class="isEntryShown(entry) ? 'ion-minus' : 'ion-plus'"></i> &nbsp;
+                                    <label class="item-text-wrap" ng-bind-html='getSubstring(entry)'></label><br/>
+
+                                    <a class='paddingLeft' ng-href={{entry.guid.toString()}} target="_blank">{{entry.guid.toString()}}</a><br>
+                                </ion-item>
+                            </div>
+                            <ion-item class="item-text-wrap noBorder" ng-show="isEntryShown(entry)" ng-repeat='item in entry.encoded.p'>
+                                <p ng-bind-html='item'></p>
+                            </ion-item>
+
+                        </div>
+                    </ion-list>
+                </ion-content>
+            </ion-tab>
+
+            <!-- News Tab -->
+            <ion-tab title="News" icon-off="ion-social-designernews-outline" icon-on="ion-social-designernews" href="#/tab/news">
+                <ion-content ng-controller="FeedController" ng-init="init()" class='has-header' ng-class="{'has-tabs-top': platform.isAndroid()}">
+
+                    <label class="item item-input">
+                  <i class="icon ion-search placeholder-icon"></i>
+                  <input ng-model="query" type="search" placeholder="Filter by" autofocus>
+                </label>
+
+                    <ion-list>
+                        <div ng-repeat="newsItem in news | filter : query ">
+                            <div class='card'>
+                                <ion-item ng-click="toggleRss(newsItem)" ng-class="{active: isEntryShown(newsItem)}" class="item item-text-wrap">
+                                    <i class="icon" ng-class="isEntryShown(newsItem) ? 'ion-minus' : 'ion-plus'"></i> &nbsp;
+                                    <label class="item-text-wrap" ng-bind-html='getSubstring(newsItem)'></label><br/>
+
+                                    <a class='paddingLeft' ng-href={{newsItem.guid.toString()}} target="_blank">{{newsItem.guid.toString()}}</a><br>
+                                </ion-item>
+                            </div>
+
+                            <ion-item class="item-text-wrap noBorder" ng-show="isEntryShown(newsItem)" ng-repeat='item in newsItem.encoded.p'>
+                                <p ng-bind-html='item'></p>
+                            </ion-item>
+
+                        </div>
+                    </ion-list>
+                </ion-content>
+
+            </ion-tab>
+        </ion-tabs>
+    </ion-pane>
+</body>
+</html>
